@@ -1,0 +1,28 @@
+{
+    "name": "peterujah/php-agora-tokens",
+    "type": "library",
+    "description": "This package is a Composer-friendly rewrite of Agora,s PHP token generator.",
+    "keywords": ["agora", "agora-tokens", "php agora", "agora rtc", "agora rtm", "php", "agora live-streaming", "agora WebRTC "],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ujah Chigozie",
+            "email": "ujahchigozie@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0 || ^8.0",
+        "ext-mbstring": "*"
+    },
+    "autoload": {
+        "psr-4": { 
+            "Agora\\": "src/" 
+        }
+    },
+     "extra": {
+        "branch-alias": {
+            "dev-master": "1.2-dev"
+        }
+    },
+    "prefer-stable": true
+}
