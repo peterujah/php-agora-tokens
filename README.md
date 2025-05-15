@@ -198,13 +198,7 @@ $token2 = RtcToken::buildTokenWithUserAccount($client, $user2);
 echo 'Token with user account: ' . $token2 . PHP_EOL;
 ```
 
----
-
-### Recommendations
-
-* Use `RtcToken` instead of `RtcTokenLegacy` if you're working with **AccessToken2 (v007)**.
-* Use `putenv()` or `.env` files to set `AGORA_APP_ID` and `AGORA_APP_CERTIFICATE` during local development.
-* Ensure your system clock is synchronized (especially in UTC) when generating tokens.
+> Use `RtcToken` instead of `RtcTokenLegacy` if you're working with **AccessToken2 (v007)**.
 
 ---
 
