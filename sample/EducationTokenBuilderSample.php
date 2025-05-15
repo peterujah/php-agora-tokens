@@ -3,15 +3,16 @@ use \Peterujah\Agora\Agora;
 use \Peterujah\Agora\User;
 use \Peterujah\Agora\Builders\EducationToken;
 
-$client = new Agora(
-    getenv("AGORA_APP_ID"), // Need to set environment variable AGORA_APP_ID
-    getenv("AGORA_APP_CERTIFICATE"), // Need to set environment variable AGORA_APP_CERTIFICATE
-);
-
 $expire = 600;
 $roomUuid = "123";
 $userUuid = "2882341273";
 $role = 1;
+
+$client = new Agora(
+    getenv("AGORA_APP_ID"), // Need to set environment variable AGORA_APP_ID
+    getenv("AGORA_APP_CERTIFICATE"), // Need to set environment variable AGORA_APP_CERTIFICATE
+);
+$client->setExpiration($expire);
 
 $user1 = (new User($userUuid))
     ->setPrivilegeExpire($expire)

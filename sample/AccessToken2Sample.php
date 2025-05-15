@@ -16,7 +16,7 @@ $client = new Agora(
     getenv("AGORA_APP_ID"), // Need to set environment variable AGORA_APP_ID
     getenv("AGORA_APP_CERTIFICATE"), // Need to set environment variable AGORA_APP_CERTIFICATE
 );
-//$client->setExpiration($expireTimeInSeconds);
+$client->setExpiration($expireTimeInSeconds);
 
 
 $user = new User($uid);
