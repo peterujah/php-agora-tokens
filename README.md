@@ -158,42 +158,43 @@ You can generate tokens locally using your Agora App ID and App Certificate.
 use Peterujah\Agora\Agora;
 use Peterujah\Agora\User;
 use Peterujah\Agora\Roles;
-use Peterujah\Agora\Builders\RtcTokenLegacy;
+use Peterujah\Agora\Builders\RtcToken;
 
 // Example inputs
 $channelName = "7d72365eb983485397e3e3f9d460bdda";
 $uid = 2882341273;
 $uidStr = "2882341273";
-$expireTimeInSeconds = 3600;
+$maxTokenLive = 3600;
 
 // Generate privilege expiration timestamp (UTC)
 $currentTimestamp = (new DateTime("now", new DateTimeZone('UTC')))->getTimestamp();
-$privilegeExpiredTs = $currentTimestamp + $expireTimeInSeconds;
+$privilegeExpiredTs = $currentTimestamp + $maxTokenLive;
 
 // Initialize Agora client using environment variables
 $client = new Agora(
-    getenv("AGORA_APP_ID"),           // Set this in your environment
-    getenv("AGORA_APP_CERTIFICATE")   // Set this in your environment
+  getenv("AGORA_APP_ID"),           // Set this in your environment
+  getenv("AGORA_APP_CERTIFICATE")   // Set this in your environment
 );
+$client->setExpiration($privilegeExpiredTs); // Agora Token expiration
 
 // User using UID (int)
 $user1 = (new User($uid))
-    ->setPrivilegeExpire($privilegeExpiredTs)
-    ->setChannel($channelName)
-    ->setRole(Roles::RTC_PUBLISHER);
+  ->setPrivilegeExpire($privilegeExpiredTs)
+  ->setChannel($channelName)
+  ->setRole(Roles::RTC_PUBLISHER);
 
-// Generate RTC token using legacy builder (AccessToken v006)
-$token1 = RtcTokenLegacy::buildTokenWithUid($client, $user1);
+// Generate RTC token using legacy builder (AccessToken v007)
+$token1 = RtcToken::buildTokenWithUid($client, $user1);
 echo 'Token with int UID: ' . $token1 . PHP_EOL;
 
 // User using User Account (string)
 $user2 = (new User($uidStr))
-    ->setPrivilegeExpire($privilegeExpiredTs)
-    ->setChannel($channelName)
-    ->setRole(Roles::RTC_PUBLISHER);
+  ->setPrivilegeExpire($privilegeExpiredTs)
+  ->setChannel($channelName)
+  ->setRole(Roles::RTC_PUBLISHER);
 
 // Generate RTC token using legacy builder with user account
-$token2 = RtcTokenLegacy::buildTokenWithUserAccount($client, $user2);
+$token2 = RtcToken::buildTokenWithUserAccount($client, $user2);
 echo 'Token with user account: ' . $token2 . PHP_EOL;
 ```
 
@@ -217,3 +218,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 Original implementation by [Agora](https://github.com/AgoraIO/Tools).
 Composer-friendly rewrite and enhancements by [@peterujah](https://github.com/peterujah).
+
