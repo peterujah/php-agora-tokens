@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": { 
-            "Agora\\": "src/" 
+            "Peterujah\\Agora\\": "src/" 
         }
     },
      "extra": {
