@@ -53,6 +53,15 @@ class User
     /** @var bool Whether to hash the user ID using MD5 */
     private bool $hashUserId = false;
 
+    /** @var string User nickname */
+    private string $nickname = '';
+
+    /** @var string User username */
+    private string $username = '';
+
+    /** @var string User password */
+    private string $password = '';
+
     /**
      * Initializes a User instance with a given UID or user account.
      *
@@ -199,6 +208,45 @@ class User
     }
 
     /**
+     * Sets the username for the user.
+     *
+     * @param string $username
+     * 
+     * @return self Return instance of class.
+     */
+    public function setUsername(string $username): self 
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * Sets the nickname for the user.
+     *
+     * @param string $nickname
+     * 
+     * @return self Return instance of class.
+     */
+    public function setNickname(string $nickname): self 
+    {
+        $this->nickname = $nickname;
+        return $this;
+    }
+
+    /**
+     * Sets the password for the user.
+     *
+     * @param string $password
+     * 
+     * @return self Return instance of class.
+     */
+    public function setPassword(string $password): self 
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    /**
      * Sets the RTC role for the user.
      * Example roles:
      * - 1 = Publisher
@@ -212,6 +260,36 @@ class User
     {
         $this->role = $role;
         return $this;
+    }
+
+    /**
+     * Gets the username for this user.
+     *
+     * @return string
+     */
+    public function getUsername(): string 
+    {
+        return $this->username;
+    }
+
+    /**
+     * Gets the nickname for this user.
+     *
+     * @return string
+     */
+    public function getNickname(): string 
+    {
+        return $this->nickname;
+    }
+
+    /**
+     * Gets the password for this user.
+     *
+     * @return string
+     */
+    public function getPassword(): string 
+    {
+        return $this->password;
     }
 
     /**
