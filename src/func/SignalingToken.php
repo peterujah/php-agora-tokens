@@ -2,15 +2,22 @@
 namespace Peterujah\Agora\func;
 $SDK_VERSION = "1";
 
-function getToken($appid, $appCertificate, $account, $validTimeInSeconds): string 
+function get_token(
+    string $appid, 
+    string $appCertificate, 
+    string|int $account, 
+    int $validTimeInSeconds
+): string 
 {
     global $SDK_VERSION;
     $expiredTime = time() + $validTimeInSeconds;
 
-    $token_items = array();
-    array_push($token_items, $SDK_VERSION);
-    array_push($token_items, $appid);
-    array_push($token_items, $expiredTime);
-    array_push($token_items, md5($account.$appid.$appCertificate.$expiredTime));
-    return join(":", $token_items);
+    $items = [];
+    $items[] = $SDK_VERSION;
+    $items[] = $appid;
+    $items[] = $expiredTime;
+    $items[] = md5($account.$appid.$appCertificate.$expiredTime);
+    $items[] = $SDK_VERSION;
+
+    return join(":", $items);
 }
