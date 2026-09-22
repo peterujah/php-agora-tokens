@@ -369,7 +369,9 @@ class User
      */
     public function getAccount(): string
     {
-        return $this->hashUserId ? md5((string) $this->userId) : (string) $this->userId;
+        return $this->hashUserId 
+            ? md5((string) $this->userId) 
+            : (string) $this->userId;
     }
 
     /**
