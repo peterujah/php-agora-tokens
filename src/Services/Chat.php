@@ -50,7 +50,8 @@ class Chat extends BaseService
      */
     public function pack(): string
     {
-        return parent::pack() . Util::packString($this->userId);
+        return parent::pack() 
+            . Util::packString($this->userId);
     }
 
     /**
@@ -64,6 +65,7 @@ class Chat extends BaseService
     public function unpack(&$data): void
     {
         parent::unpack($data);
+        
         $this->userId = Util::unpackString($data);
     }
 }
