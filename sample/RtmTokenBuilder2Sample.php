@@ -5,6 +5,7 @@ use \Peterujah\Agora\Builders\RtmToken;
 
 $user = "2882341273";
 $expireTimeInSeconds = 3600;
+$privilegeExpiredTs = time() + $expireTimeInSeconds;
 
 $client = new Agora(
     getenv("AGORA_APP_ID"), // Need to set environment variable AGORA_APP_ID
