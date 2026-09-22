@@ -1,5 +1,8 @@
 <?php
 namespace Peterujah\Agora\func;
+
+// Globals
+
 $version = "005";
 $NO_UPLOAD = "0";
 $AUDIO_VIDEO_UPLOAD = "3";
@@ -13,31 +16,124 @@ $RECORDING_SERVICE = 2;
 $PUBLIC_SHARING_SERVICE = 3;
 $IN_CHANNEL_PERMISSION = 4;
 
-function generateRecordingKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs)
+function generate_recording_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs
+)
 {
-    return generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs, $GLOBALS["RECORDING_SERVICE"], array());
+    return generate_dynamic_key(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts, 
+        $randomInt, 
+        $uid, 
+        $expiredTs, 
+        $GLOBALS["RECORDING_SERVICE"]
+    );
 }
 
-function generateMediaChannelKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs)
+function generate_media_channel_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs
+)
 {
-    return generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs, $GLOBALS["MEDIA_CHANNEL_SERVICE"], array());
+    return generate_dynamic_key(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts, 
+        $randomInt, 
+        $uid, 
+        $expiredTs, 
+        $GLOBALS["MEDIA_CHANNEL_SERVICE"]
+    );
 }
 
-function generateInChannelPermissionKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs, $permission)
+function generate_in_channel_permission_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs, 
+    int $permission
+): string
 {
     $extra[$GLOBALS["ALLOW_UPLOAD_IN_CHANNEL"]] = $permission;
-    return generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs, $GLOBALS["IN_CHANNEL_PERMISSION"], $extra);
+
+    return generate_dynamic_key(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts, 
+        $randomInt, 
+        $uid, 
+        $expiredTs, 
+        $GLOBALS["IN_CHANNEL_PERMISSION"],
+        $extra
+    );
 }
 
-function generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs, $serviceType, $extra)
+function generate_dynamic_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs, 
+    string $serviceType, 
+    array $extra = []
+): string
 {
-    $signature = generateSignature($serviceType, $appID, $appCertificate, $channelName, $uid, $ts, $randomInt, $expiredTs, $extra);
-    $content = packContent($serviceType, $signature, hex2bin($appID), $ts, $randomInt, $expiredTs, $extra);
-    // echo bin2hex($content);
-    return $GLOBALS["version"] . base64_encode($content);
+    $signature = generate_signature(
+        $serviceType, 
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $uid, 
+        $ts, 
+        $randomInt, 
+        $expiredTs, 
+        $extra
+    );
+
+    $content = pack_content(
+        $serviceType, 
+        $signature, 
+        hex2bin($appID), 
+        $ts, 
+        $randomInt, 
+        $expiredTs, 
+        $extra
+    );
+
+    return $GLOBALS['version'] . base64_encode($content);
 }
 
-function generateSignature($serviceType, $appID, $appCertificate, $channelName, $uid, $ts, $salt, $expiredTs, $extra)
+function generate_signature(
+    string $serviceType, 
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $uid, 
+    int $ts, 
+    int $salt, 
+    int $expiredTs, 
+    array $extra = []
+): string
 {
     $rawAppID = hex2bin($appID);
     $rawAppCertificate = hex2bin($appCertificate);
@@ -51,6 +147,7 @@ function generateSignature($serviceType, $appID, $appCertificate, $channelName, 
     $buffer .= pack("I", $expiredTs);
 
     $buffer .= pack("S", count($extra));
+
     foreach ($extra as $key => $value) {
         $buffer .= pack("S", $key);
         $buffer .= pack("S", strlen($value)) . $value;
@@ -59,24 +156,33 @@ function generateSignature($serviceType, $appID, $appCertificate, $channelName, 
     return strtoupper(hash_hmac('sha1', $buffer, $rawAppCertificate));
 }
 
-function packString($value)
+function pack_string(string $value): string
 {
     return pack("S", strlen($value)) . $value;
 }
 
-function packContent($serviceType, $signature, $appID, $ts, $salt, $expiredTs, $extra)
+function pack_content(
+    string $serviceType, 
+    string $signature, 
+    string $appID, 
+    int $ts, 
+    int $salt, 
+    int $expiredTs, 
+    array $extra = []
+): string
 {
     $buffer = pack("S", $serviceType);
-    $buffer .= packString($signature);
-    $buffer .= packString($appID);
+    $buffer .= pack_string($signature);
+    $buffer .= pack_string($appID);
     $buffer .= pack("I", $ts);
     $buffer .= pack("I", $salt);
     $buffer .= pack("I", $expiredTs);
 
     $buffer .= pack("S", count($extra));
+
     foreach ($extra as $key => $value) {
         $buffer .= pack("S", $key);
-        $buffer .= packString($value);
+        $buffer .= pack_string($value);
     } 
 
     return $buffer;
