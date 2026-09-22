@@ -1,17 +1,62 @@
 <?php
 namespace Peterujah\Agora\func;
 
-function generateRecordingKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs ,$serviceType='ARS')
+function generate_recording_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs,
+    string $serviceType = 'ARS'
+)
 {
-    return generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs ,$serviceType);
+    return generate_dynamic_key(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts, 
+        $randomInt, 
+        $uid, 
+        $expiredTs,
+        $serviceType
+    );
 }
 
-function generateMediaChannelKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs ,$serviceType='ACS')
+function generate_media_channel_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs,
+    string $serviceType = 'ACS'
+)
 {
-    return generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs ,$serviceType);
+    return generate_dynamic_key(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts, 
+        $randomInt, 
+        $uid, 
+        $expiredTs,
+        $serviceType
+    );
 }
 
-function generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomInt, $uid, $expiredTs ,$serviceType)
+function generate_dynamic_key(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomInt, 
+    int $uid, 
+    int $expiredTs,
+    string $serviceType
+) : string
 {
     $version = "004";
 
@@ -24,13 +69,43 @@ function generateDynamicKey($appID, $appCertificate, $channelName, $ts, $randomI
     $expiredStr = "0000000000" . $expiredTs;
     $expiredStr = substr($expiredStr,-10);
 
-    $signature = generateSignature($appID, $appCertificate, $channelName, $ts, $randomStr, $uidStr, $expiredStr ,$serviceType);
+    $signature = generate_signature(
+        $appID, 
+        $appCertificate, 
+        $channelName, 
+        $ts,
+        $randomStr, 
+        $uidStr, 
+        $expiredStr,
+        $serviceType
+    );
 
-    return $version . $signature . $appID . $ts . $randomStr . $expiredStr;
+    return $version 
+        . $signature 
+        . $appID 
+        . $ts 
+        . $randomStr 
+        . $expiredStr;
 }
 
-function generateSignature($appID, $appCertificate, $channelName, $ts, $randomStr, $uidStr, $expiredStr ,$serviceType)
+function generate_signature(
+    string $appID, 
+    string $appCertificate, 
+    string $channelName, 
+    int $ts, 
+    int $randomStr, 
+    string $uidStr, 
+    string $expiredStr,
+    string $serviceType
+): string
 {
-    $concat = $serviceType . $appID . $ts . $randomStr . $channelName . $uidStr . $expiredStr;
+    $concat = $serviceType 
+        . $appID 
+        . $ts 
+        . $randomStr 
+        . $channelName 
+        . $uidStr 
+        . $expiredStr;
+
     return hash_hmac('sha1', $concat, $appCertificate);
 }
