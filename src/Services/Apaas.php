@@ -73,6 +73,7 @@ class Apaas extends BaseService
     public function unpack(&$data): void
     {
         parent::unpack($data);
+        
         $this->roomId = Util::unpackString($data);
         $this->userId = Util::unpackString($data);
         $this->role   = Util::unpackInt16($data);
