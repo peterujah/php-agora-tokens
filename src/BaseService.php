@@ -13,7 +13,7 @@ namespace Peterujah\Agora;
 use \Peterujah\Agora\Util;
 use \Peterujah\Agora\User;
 
-class BaseService
+abstract class BaseService
 {
     /**
      * Service type constant for Real-Time Communication (RTC).
@@ -129,6 +129,8 @@ class BaseService
      * @param int $expire The expiration timestamp for the privilege.
      * 
      * @return self Returns the current instance for method chaining.
+     * 
+     * @see Privileges
      */
     public function addPrivilege(int $privilege, int $expire): self 
     {
