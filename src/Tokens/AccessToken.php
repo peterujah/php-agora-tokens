@@ -142,7 +142,7 @@ class AccessToken
      * @param bool $throw If true, throws exceptions for invalid UUIDs. If false, returns an empty string on failure.
      * 
      * @return string The encoded Agora token string.
-     * @throws RuntimeException If appId or appCert are invalid UUIDs and $throw is true.
+     * @throws AgoraException If appId or appCert are invalid UUIDs and $throw is true.
      */
     public function build(bool $throw = true): string
     {
@@ -151,18 +151,28 @@ class AccessToken
         }
 
         if ($throw && !self::isUUid($this->appId)){
-            throw new AgoraException(sprintf('Application Id: %s is not a valid UUID', $this->appId));
+            throw new AgoraException(sprintf(
+                'Application Id: %s is not a valid UUID', 
+                $this->appId
+            ));
         }
 
         if ($throw && !self::isUUid($this->appCert)){
-            throw new AgoraException(sprintf('Application Cert: %s is not a valid UUID', $this->appCert));
+            throw new AgoraException(sprintf(
+                'Application Cert: %s is not a valid UUID', 
+                $this->appCert
+            ));
         }
 
         $signing = $this->getSign();
-        $data = Util::packString($this->appId) . Util::packUint32($this->issueTs) . Util::packUint32($this->expire)
-            . Util::packUint32($this->salt) . Util::packUint16(count($this->services));
+        $data = Util::packString($this->appId) 
+            . Util::packUint32($this->issueTs) 
+            . Util::packUint32($this->expire)
+            . Util::packUint32($this->salt) 
+            . Util::packUint16(count($this->services));
 
         ksort($this->services);
+
         foreach ($this->services as $key => $service) {
             $data .= $service->pack();
         }
@@ -182,8 +192,12 @@ class AccessToken
      */
     public function getSign(): string
     {
-        $hh = hash_hmac("sha256", $this->appCert, Util::packUint32($this->issueTs), true);
-        return hash_hmac("sha256", $hh, Util::packUint32($this->salt), true);
+        return hash_hmac(
+            'sha256', 
+            hash_hmac('sha256', $this->appCert, Util::packUint32($this->issueTs), true), 
+            Util::packUint32($this->salt), 
+            true
+        );
     }
 
     /**
@@ -237,7 +251,7 @@ class AccessToken
         $this->salt = Util::unpackUint32($data);
         $serviceNum = Util::unpackUint16($data);
 
-        $servicesObj = [
+        $services = [
             BaseService::RTC_SERVICE => new Rtc(),
             BaseService::RTM_SERVICE => new Rtm(),
             BaseService::FPA_SERVICE => new Fpa(),
@@ -246,13 +260,15 @@ class AccessToken
         ];
 
         for ($i = 0; $i < $serviceNum; $i++) {
-            $serviceTye = Util::unpackUint16($data);
-            $service = $servicesObj[$serviceTye];
-            if ($service == null) {
+            $type = Util::unpackUint16($data);
+            $service = $services[$type];
+
+            if ($service === null) {
                 return false;
             }
+
             $service->unpack($data);
-            $this->services[$serviceTye] = $service;
+            $this->services[$type] = $service;
         }
         return true;
     }
