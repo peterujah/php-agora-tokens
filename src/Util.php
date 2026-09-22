@@ -12,8 +12,10 @@ namespace Peterujah\Agora;
 
 use Peterujah\Agora\Exceptions\AgoraException;
 
-class Util
+final class Util
 {
+    private const UID_MAX_RENGE = 4294967295;
+
     /**
      * Asserts that two strings are equal and outputs the result with debug info.
      *
@@ -30,8 +32,13 @@ class Util
             $debug[1]["line"]
         );
 
-        if ($expected != $actual) {
-            echo $info . "\n  Assert failed" . "\n    Expected :" . $expected . "\n    Actual   :" . $actual;
+        if ($expected !== $actual) {
+            echo sprintf(
+                "%s\n\nAssert failed\nExpected : %s\n Actual : %s",
+                $info,
+                $expected,
+                $actual
+            );
             return;
         }
 
@@ -89,7 +96,7 @@ class Util
      */
     public static function isValidUid(int $value): bool
     {
-        return $value >= 1 && $value <= 4294967295;
+        return $value >= 1 && $value <= self::UID_MAX_RENGE;
     }
 
     /**
@@ -99,7 +106,7 @@ class Util
      */
     public static function generateUid(): int 
     {
-        return random_int(1, 4294967295);
+        return random_int(1, self::UID_MAX_RENGE);
     }   
 
     /**
@@ -111,7 +118,7 @@ class Util
      */
     public static function packUint16(mixed $x): string
     {
-        return pack("v", $x);
+        return pack('v', $x);
     }
 
     /**
@@ -123,8 +130,9 @@ class Util
      */
     public static function unpackUint16(string &$data): mixed
     {
-        $up = unpack("v", substr($data, 0, 2));
+        $up = unpack('v', substr($data, 0, 2));
         $data = substr($data, 2);
+
         return $up[1];
     }
 
@@ -137,7 +145,7 @@ class Util
      */
     public static function packUint32(mixed $x): string
     {
-        return pack("V", $x);
+        return pack('V', $x);
     }
 
     /**
@@ -149,7 +157,7 @@ class Util
      */
     public static function unpackUint32(string &$data): mixed
     {
-        $up = unpack("V", substr($data, 0, 4));
+        $up = unpack('V', substr($data, 0, 4));
         $data = substr($data, 4);
         return $up[1];
     }
@@ -163,7 +171,7 @@ class Util
      */
     public static function packInt16(mixed $x): string
     {
-        return pack("s", $x);
+        return pack('s', $x);
     }
 
     /**
@@ -175,7 +183,7 @@ class Util
      */
     public static function unpackInt16(string &$data): mixed
     {
-        $up = unpack("s", substr($data, 0, 2));
+        $up = unpack('s', substr($data, 0, 2));
         $data = substr($data, 2);
 
         return $up[1];
@@ -190,7 +198,7 @@ class Util
      */
     public static function packString2Byte(string $value): string
     {
-        return pack("v", strlen($value)) . $value;
+        return pack('v', strlen($value)) . $value;
     }
 
     /**
@@ -217,6 +225,7 @@ class Util
         $len = self::unpackUint16($data);
         $up = unpack("C*", substr($data, 0, $len));
         $data = substr($data, $len);
+
         return implode(array_map("chr", $up));
     }
 
@@ -231,6 +240,7 @@ class Util
     {
         ksort($arr);
         $kv = "";
+
         foreach ($arr as $key => $val) {
             $kv .= self::packUint16($key) . self::packUint32($val);
         }
@@ -249,9 +259,11 @@ class Util
     {
         $len = self::unpackUint16($data);
         $arr = [];
+
         for ($i = 0; $i < $len; $i++) {
             $arr[self::unpackUint16($data)] = self::unpackUint32($data);
         }
+
         return $arr;
     }
 }
