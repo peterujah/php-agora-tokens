@@ -66,6 +66,7 @@ class Rtc extends BaseService
     public function unpack(&$data): void
     {
         parent::unpack($data);
+        
         $this->channelName = Util::unpackString($data);
         $this->userId = Util::unpackString($data);
     }
