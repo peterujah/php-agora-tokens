@@ -44,7 +44,9 @@ class Message
     public function __construct()
     {
         $this->salt = rand(0, 100000);
-        $this->ts = (new DateTime("now", new DateTimeZone('UTC')))->getTimestamp() + 24 * 3600;
+        $this->ts = (new DateTime('now', new DateTimeZone('UTC')))
+            ->getTimestamp() + 24 * 3600;
+
         $this->privileges = [];
     }
 
@@ -56,12 +58,20 @@ class Message
     public function packContent(): array
     {
         $buffer = unpack("C*", pack("V", $this->salt));
+        
         $buffer = array_merge($buffer, unpack("C*", pack("V", $this->ts)));
         $buffer = array_merge($buffer, unpack("C*", pack("v", sizeof($this->privileges))));
         
         foreach ($this->privileges as $key => $value) {
-            $buffer = array_merge($buffer, unpack("C*", pack("v", $key)));
-            $buffer = array_merge($buffer, unpack("C*", pack("V", $value)));
+            $buffer = array_merge(
+                $buffer, 
+                unpack("C*", pack("v", $key))
+            );
+
+            $buffer = array_merge(
+                $buffer, 
+                unpack("C*", pack("V", $value))
+            );
         }
 
         return $buffer;
